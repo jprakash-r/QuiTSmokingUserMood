@@ -1,0 +1,17 @@
+version: "2.2"
+services:
+  app:
+    container_name: user-mood-docker
+    restart: always
+    build: .
+    ports:
+      - "8092:8092"
+    links:
+      - mongo
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - /Users/J_Prakash/data/db1:/data/db
+    ports:
+      - "27017:27017"
