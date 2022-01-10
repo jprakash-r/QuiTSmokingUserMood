@@ -3,25 +3,38 @@ const User = require('../model/user-model.js')
 const Mood = require('../model/mood-model.js')
 const userMoodService = require('../service/usermood-service')
 const userMoodUtility = require('../utility/util')
+const validationUtil = require('../utility/validation')
+const applicationConstants = require('../constant/constants')
 
 
 var ObjectId = require('mongodb').ObjectId
 
 
 const createUser = async (req, res) => {
-    
     try {
+        validationUtil.validateRequestBody(req, applicationConstants.PERSON)
         const newUserDetails = new User(req.body)
         const savedUser = await newUserDetails.save()
         res.status(200).json({ success: true, data: savedUser })
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message })
+        res.status(500).json({ success: false, message: error })
     }
 }
 
 const createMood = async (req, res) => {
-    
+
     try {
+        validationUtil.validateRequestBody(req, applicationConstants.MOOD)
+        const user = await userMoodService.getUserDetailsPerTimeLine(req, req.body.date + applicationConstants.ISOTIMEZONE, req.body.date + applicationConstants.ISOTIMEZONE)
+        if (user) {
+            const moodType = userMoodUtility.numberOfMoodDays(user)
+            if (moodType > 0) {
+                throw "Mood for this User for this day  already exists."
+            }
+        }
+        else {
+            throw "User doesnot exist."
+        }
         const moodDetails = new Mood(req.body)
         const moodReturnVal = await moodDetails.save()
         const userValue = await User.findById({ _id: req.params.userId })
@@ -29,7 +42,7 @@ const createMood = async (req, res) => {
         await userValue.save()
         res.status(200).json({ success: true, data: moodReturnVal })
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message })
+        res.status(500).json({ success: false, message: error })
     }
 
 }
@@ -38,7 +51,6 @@ const getAllUsers = async (req, res) => {
 
     try {
         const user = await User.find().populate({ path: 'userMoods', select: 'date moodType' })
-        console.log('user details ' + user)
         res.status(200).json(user)
     } catch (error) {
         res.status(500).json({ success: false, message: error.message })
@@ -46,11 +58,15 @@ const getAllUsers = async (req, res) => {
 }
 
 const getUserById = async (req, res) => {
-   
+
     try {
         const user = await User.findOne({ _id: new Object(req.params.userId) }).populate({ path: 'userMoods', select: 'date moodType' })
-        console.log('user details ' + user)
-        res.status(200).json(user)
+        if (user) {
+            res.status(200).json(user)
+        }
+        else {
+            const errorMsg = "No user found with id :" + req.params.userId
+        }
     } catch (error) {
         res.status(500).json({ success: false, message: error.message })
     }
@@ -58,48 +74,25 @@ const getUserById = async (req, res) => {
 
 const getUserMood = async (req, res) => {
 
-    let errorMsg = ""
-
     try {
-
-        if (!req.params.userId) {
-            errorMsg = "Please provide user id."
-            res.status(500).json({ success: false, message: errorMsg })
-        }
-        if (!req.params.mood) {
-            errorMsg = "Please provide mood to look for in user."
-            res.status(500).json({ success: false, message: errorMsg })
-        }
-
-        if (!req.query.fromDate && !req.query.toDate) {
-            
+        validationUtil.validateRequest(req, res)
+        if (validationUtil.defaultDataRequested(req)) {
             const user = await userMoodService.getUserMoodDetails(req)
             const userJson = userMoodUtility.numberOfMoodDays(user)
             res.status(200).json({ success: true, data: user, mooddays: userJson })
         }
         else {
-            if (!req.query.fromDate || !req.query.toDate) {
-                errorMsg = "Please provide From Date & To Date"
-                res.status(500).json({ success: false, message: errorMsg })
-            }
-            else {
-                const fromDate = new Date(req.query.fromDate + "T00:00:00.000Z")
-                const toDate = new Date(req.query.toDate + "T00:00:00.000Z")
+            validationUtil.validateDateRange(req)
+            const fromDate = req.query.fromDate + applicationConstants.ISOTIMEZONE
+            const toDate = req.query.toDate + applicationConstants.ISOTIMEZONE
 
-                if (fromDate.getTime() > toDate.getTime()) {
-                    errorMsg = "From Date should be lesser than To Date"
-                    res.status(500).json({ success: false, message: errorMsg })
-                }
-                else {
-                    const user = await userMoodService.getUserMoodDetailsPerTimeLine(req, fromDate, toDate)
-                    const userJson = userMoodUtility.numberOfMoodDays(user)
-                    res.status(200).json({ success: true, data: user, mooddays: userJson })
-                }
-            }
+            const user = await userMoodService.getUserMoodDetailsPerTimeLine(req, fromDate, toDate)
+            const userJson = userMoodUtility.numberOfMoodDays(user)
+            res.status(200).json({ success: true, data: user, mooddays: userJson })
+
         }
-
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message })
+        res.status(500).json({ success: false, message: error })
     }
 }
 
@@ -110,9 +103,5 @@ module.exports.getUserById = getUserById
 module.exports.CreateUser = createUser
 module.exports.createMood = createMood
 module.exports.getUserMood = getUserMood
-
-
-
-
 
 

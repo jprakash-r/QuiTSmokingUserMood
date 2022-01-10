@@ -11,6 +11,7 @@ const router = express.Router()
 router.get('/', root)
 router.get('/users', UserMoodController.getAllUsers)
 router.get('/users/:userId', UserMoodController.getUserById)
+
 router.post('/create', UserMoodController.CreateUser)
 router.post('/createmood/:userId', UserMoodController.createMood)
 router.get('/getUserMood/:userId/:mood',UserMoodController.getUserMood)

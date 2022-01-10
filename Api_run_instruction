@@ -1,0 +1,33 @@
+Create user:
+
+API : http://localhost:3000/create
+Payload : 
+  {
+	"name": "era",
+	"age": 56
+}
+
+Create Mood for User:
+
+API : http://localhost:3000/createmood/61d6a3dc9d33fb32b6037cc7
+Payload: {
+	"date":"2021-01-06",
+	"moodType": "happy"
+}
+
+Get all User details:
+
+API : http://localhost:3000/users
+
+
+Get Specific User details:
+
+API : http://localhost:3000/users/61d6a3dc9d33fb32b6037cc8
+
+Get Specific User with Specific mood details:
+
+API : http://localhost:3000/getUserMood/61d6a3dc9d33fb32b6037cc7/happy
+
+Get Specific User with Specific mood details wihin a time range:
+
+API : http://localhost:3000/getUserMood/61d6a3dc9d33fb32b6037cc7/happy?fromDate=2021-01-03&toDate=2021-01-02
