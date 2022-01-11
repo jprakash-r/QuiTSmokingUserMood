@@ -6,9 +6,7 @@ const userMoodUtility = require('../utility/util')
 const validationUtil = require('../utility/validation')
 const applicationConstants = require('../constant/constants')
 
-
 var ObjectId = require('mongodb').ObjectId
-
 
 const createUser = async (req, res) => {
     try {
@@ -22,7 +20,6 @@ const createUser = async (req, res) => {
 }
 
 const createMood = async (req, res) => {
-
     try {
         validationUtil.validateRequestBody(req, applicationConstants.MOOD)
         const user = await userMoodService.getUserDetailsPerTimeLine(req, req.body.date + applicationConstants.ISOTIMEZONE, req.body.date + applicationConstants.ISOTIMEZONE)
@@ -44,11 +41,9 @@ const createMood = async (req, res) => {
     } catch (error) {
         res.status(500).json({ success: false, message: error })
     }
-
 }
 
 const getAllUsers = async (req, res) => {
-
     try {
         const user = await User.find().populate({ path: 'userMoods', select: 'date moodType' })
         res.status(200).json(user)
@@ -58,7 +53,6 @@ const getAllUsers = async (req, res) => {
 }
 
 const getUserById = async (req, res) => {
-
     try {
         const user = await User.findOne({ _id: new Object(req.params.userId) }).populate({ path: 'userMoods', select: 'date moodType' })
         if (user) {
@@ -73,7 +67,6 @@ const getUserById = async (req, res) => {
 }
 
 const getUserMood = async (req, res) => {
-
     try {
         validationUtil.validateRequest(req, res)
         if (validationUtil.defaultDataRequested(req)) {
@@ -95,8 +88,6 @@ const getUserMood = async (req, res) => {
         res.status(500).json({ success: false, message: error })
     }
 }
-
-
 
 module.exports.getAllUsers = getAllUsers
 module.exports.getUserById = getUserById
