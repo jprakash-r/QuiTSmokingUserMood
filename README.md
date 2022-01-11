@@ -92,8 +92,8 @@ Ideally no configuration is necessary if node is already present in system
 
 If going through docker compose :
 
-    $ docker-copose up
-    
+    $ docker-compose up
+
 Database details should be specified in .env file (or create a different .envprod and refer it. Its a sample code so havent provided here)
 
 For build in prod , need to create docker image and runit over Kube cluster .
