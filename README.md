@@ -16,12 +16,12 @@ Mongo DB :
   4. Fetch User by User id (refer api_run_instructions fr comple API details)
   5. fetch mood by User id (refer api_run_instructions fr comple API details)
 
-To design a solution , mentioned thought below .
+To design a solution , mentioned thoughts below .
 
-Create a Document named User . Whih has user id ,name and age
-Create a Document named Mood . Whih has user id ,mood
+Create a Document named User . Which has user id ,name and age .
+Create a Document named Mood . Which has user id ,mood .
 
-User and mood are in one to many relationship , i.e, one user can register mutiple moods .But one user can have one mood a day .
+User and mood are in one to many relationship , i.e, one user can register multiple moods .But one user can have one mood a day .
 
 Why choice of Mongo over Oracle : document based DB is easy to insert data into and fetch data from and can store large dataset.
 
@@ -69,8 +69,8 @@ If you need to update `npm`, you can make it using `npm`
 ## Install
 
     $ git clone https://github.com/jprakash-r/QuiTSmokingUserMood
-    $ git checkout --track master
     $ cd QuiTSmokingUserMood
+    $ git checkout --track master
     $ npm install
 
 ## Configure app
@@ -83,15 +83,20 @@ Ideally no configuration is necessary if node is already present in system
 
 ## Simple build for production
 
+    $ Start docker deskop
+    $ docker version
+    $ docker buid -t <image_name>
+    $ docker images
+    $ docker run -p 8092:8092 <image_name>
+    $ docker logs <container_id> 
+
+If going through docker compose :
+
+    $ docker-copose up
+    
 Database details should be specified in .env file (or create a different .envprod and refer it. Its a sample code so havent provided here)
 
 For build in prod , need to create docker image and runit over Kube cluster .
-  $ Start docker deskop
-  $ docker version
-  $ docker buid -t <image_name>
-  $ docker images
-  $ docker run -p 8092:8092 <image_name>
-  $ docker logs <container_id> 
 
-If going through docker compose :
-  $ docker-copose up
+
+  
